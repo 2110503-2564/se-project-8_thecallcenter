@@ -8,6 +8,7 @@ import EditBookingModal from "./EditBookingModal";
 import deleteBooking from "@/libs/Booking/deleteBooking";
 import updateBooking from "@/libs/Booking/updateBooking";
 import { Alert } from "@mui/material";
+import Swal from "sweetalert2";
 
 export default function MyBookingPage({
     initialBookings,
@@ -36,7 +37,7 @@ export default function MyBookingPage({
         setSelectedBooking(null);
     };
 
-    const handleRefundBooking = async (booking: BookingItem) => {
+    const handleRefundBooking = async (booking: BookingItem, amount: number) => {
         try {
             // Create an update object with the new status
             const updateData = {
@@ -44,11 +45,16 @@ export default function MyBookingPage({
             };
     
             // Call API to update the booking
+            
             await updateBooking(booking._id, updateData, sessionToken);
 
-            setAlertType("success");
-            setShowAlert(true);
-            setTimeout(() => setShowAlert(false), 3000);
+            Swal.fire({
+                title: "Refund!",
+                text: "Your refund has been approved!.",
+                icon: "success"
+            });
+
+            window.location.reload();
     
         } catch (error: any) {
             console.error("Error occurred during refunding:", error);
@@ -97,6 +103,7 @@ export default function MyBookingPage({
                                     onEditClick={handleEditClick}
                                     onRefundClick = {handleRefundBooking}
                                     onDeleteClick={handleDeleteBooking}
+                                    token = {sessionToken}
                                 />
                             ))}
                         </div>
