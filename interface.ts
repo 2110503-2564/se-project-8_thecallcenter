@@ -24,6 +24,24 @@ interface BookingJson {
   data: BookingItem[]
 }
 
+interface BookingJsonwithPopulate {
+  success: boolean,
+  count: number,
+  pagination: Object,
+  data: BookingWithPopulate
+}
+
+interface BookingWithPopulate {
+  _id: string,
+  checkInDate: string,
+  checkOutDate: string,
+  room: RoomItem,
+  hotel: HotelItem,
+  user: UserItem,
+  status: string,
+  payments: PaymentItemPopulate[],
+}
+
 interface UnavailablePeriod {
   startDate: string,
   endDate: string,
@@ -113,6 +131,14 @@ interface PaymentItem2 {
   canceledAt?: Date | null;
 }
 
+interface PaymentItemPopulate {
+  _id: string;
+  booking: string; 
+  amount: number;
+  status: string;
+  paymentDate?: Date;
+}
+
 interface BookingItemforPayment {
   _id: string,
   checkInDate: string,
@@ -121,3 +147,4 @@ interface BookingItemforPayment {
   hotel: HotelItem, 
   user: UserItem
 }
+
