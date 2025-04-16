@@ -2,16 +2,24 @@ import getHotels from "@/libs/Hotel/getHotels";
 import { Suspense } from "react";
 import HotelCatalog from "@/components/HotelCatalog";
 import { LinearProgress } from "@mui/material";
-import ExploreHero from "@/components/ExploreHero";
+import HeroSection from "@/components/HeroSection";
 
 export default function hotel() {
 
 const hotels = getHotels()
 
     return (
-        <div className="w-[1065px] h-auto mx-auto grid grid-cols-12 gap-[15px] mt-10 rounded-2xl">
+        <div className="h-[1200px] min-h-screen">
             
-            <ExploreHero />
+            <HeroSection
+                    title={
+                      <>
+                        Explore <br /> Your Stay
+                      </>
+                    }
+                    description="The most seamless and secure way to book unique hotel experiences around the world."
+                    imageSrc="/assets/room.png"
+                  />
             <div className="col-span-12 text-center font-serif mt-4 text-8xl text-white md:text-7xl font-Outfit font-bold leading-tight">
                 
             </div>

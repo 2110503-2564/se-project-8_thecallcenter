@@ -8,12 +8,12 @@ export default function UserLink({ profile }: { profile: any }) {
   return (
     <a
       href="/api/auth/signout"
-      className="border p-2 rounded-lg items-center text-xs text-white font-sans font-semibold hover:bg-white hover:text-black whitespace-nowrap flex flex-row"
+      className="border p-2 rounded-lg items-center text-xs font-sans font-semibold hover:bg-black hover:text-white whitespace-nowrap flex flex-row"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
       <Image
-        src={hovered ? "/img/userDark.png" : "/img/user.png"}
+        src={hovered ? "/img/user.png" : "/img/userDark.png"}
         alt="user"
         width={20}
         height={20}

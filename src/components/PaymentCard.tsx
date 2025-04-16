@@ -4,7 +4,7 @@ import { updatePayment } from "@/libs/Payment/updatePayment";
 import { cancelPayment } from "@/libs/Payment/cancelPayment";
 import { deletePayment } from "@/libs/Payment/deletePayment";
 import { useSession } from "next-auth/react";
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar, Alert, Select, MenuItem } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar, Alert, Select, MenuItem} from "@mui/material";
 
 export default function PaymentCard({ paymentData, onStatusChange, role, onDelete }: { paymentData: PaymentItem; onStatusChange: (id: string, newStatus: string) => void; role: string; onDelete: (paymentId: string) => void; }) {
     const [cancelOpen, setCancelOpen] = useState(false);
@@ -15,10 +15,11 @@ export default function PaymentCard({ paymentData, onStatusChange, role, onDelet
     const { data: session } = useSession();
 
     const [amount, setAmount] = useState(Number(paymentData.amount));
+    const [updateAmount, setUpdateAmount] = useState<number | undefined>(undefined);
     const [status, setStatus] = useState(paymentData.status);
-    const [updateStatus, setUpdateStatus] = useState(paymentData.status);
+    const [updateStatus, setUpdateStatus] = useState<string | undefined>(paymentData.status);
     const [method, setMethod] = useState(paymentData.method);
-    const [updateMethod, setUpdateMethod] = useState(paymentData.method);
+    const [updateMethod, setUpdateMethod] = useState<string | undefined>(paymentData.method);
 
     const isAdmin = role === "admin";
 
@@ -35,25 +36,29 @@ export default function PaymentCard({ paymentData, onStatusChange, role, onDelet
         }
     };
 
-    const handleUpdate = async (status: string, method: string) => {
-
+    const handleUpdate = async (status: string | undefined, method: string | undefined, amount: number | undefined) => {
         try {
-            const updatedData = {
-                status: status,
-                method: method
-            }
-
+            const updatedData: any = {};
+            if (status) updatedData.status = status;
+            if (method) updatedData.method = method;
+            if (amount) updatedData.amount = amount;
+            if (status) onStatusChange(paymentData._id, status); // Notify the parent   
+    
             await updatePayment(paymentData._id, updatedData, session?.user.token);
-            setStatus(updateStatus)
-            setMethod(updateMethod)
+    
+            if (status) setStatus(status);
+            if (method) setMethod(method);
+            if (amount) setAmount(amount);
+    
             setSnackbarMessage("Payment updated successfully.");
             setSnackbarOpen(true);
-            setUpdateOpen(false)
+            setUpdateOpen(false);
         } catch (error) {
             setSnackbarMessage(error instanceof Error ? error.message : "Failed to update payment details.");
             setSnackbarOpen(true);
         }
     };
+    
 
     const handleCancelConfirm = async () => {
         try {
@@ -90,7 +95,12 @@ export default function PaymentCard({ paymentData, onStatusChange, role, onDelet
                 <p><span className="font-semibold">Amount: </span> {amount}</p>
                 <p><span className="font-semibold">Method: </span> {method}</p>
                 <p><span className="font-semibold">Status: </span> 
-                    <span className={`px-2 py-1 rounded-md ${status === "canceled" ? "bg-red-200 text-red-700" : "bg-gray-200 text-gray-700"}`}>
+                    <span className={`px-2 py-1 rounded-md ${ 
+                        status === "pending" ? "bg-yellow-200 text-yellow-700" :
+                        status === "completed" ? "bg-green-200 text-green-700" :
+                        status === "failed" ? "bg-red-200 text-red-700" :
+                        status === "canceled" ? "bg-red-200 text-red-700" :
+                        "bg-gray-200 text-gray-700"}`}>
                         {status}
                     </span>
                 </p>
@@ -162,38 +172,91 @@ export default function PaymentCard({ paymentData, onStatusChange, role, onDelet
             <Dialog open={updateOpen} onClose={() => setUpdateOpen(false)}>
                 <DialogTitle>Update Payment</DialogTitle>
                 <DialogContent>
-                    {/* Status Update */}
-                    {role === "admin" && (
-                    <div>
-                        <p>Status:</p>
-                        <Select
-                            fullWidth
-                            value={updateStatus}
-                            onChange={(e) => setUpdateStatus(e.target.value)}
-                            sx={{ marginBottom: 2 }}
-                        >
-                            <MenuItem value="completed">Completed</MenuItem>
-                            <MenuItem value="failed">Failed</MenuItem>
-                        </Select>
+                    {/* Amount */}
+                    <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Amount:</label>
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="number"
+                                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                value={updateAmount ?? ""}
+                                onChange={(e) => setUpdateAmount(Number(e.target.value))}
+                                placeholder="Enter new amount"
+                            />
+                            <button
+                                onClick={() => setUpdateAmount(undefined)}
+                                className="text-gray-500 hover:text-black font-semibold text-lg px-2"
+                                aria-label="Clear"
+                            >
+                                ×
+                            </button>
+                        </div>
                     </div>
-                    )}
 
-                    {/* Payment Method Update */}
-                    <p>Payment Method:</p>
-                    <Select
-                        fullWidth
-                        value={updateMethod}
-                        onChange={(e) => setUpdateMethod(e.target.value)}
-                        disabled={status !== "unpaid"}
-                    >
-                        <MenuItem value="credit card">Credit Card</MenuItem>
-                        <MenuItem value="debit card">Debit Card</MenuItem>
-                        <MenuItem value="bank transfer">Bank Transfer</MenuItem>
-                    </Select>
+                    {/* Status */}
+                    <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Status:</label>
+                        <div className="flex items-center gap-2">
+                            <Select
+                                fullWidth
+                                value={updateStatus ?? ""}
+                                onChange={(e) =>
+                                    setUpdateStatus(e.target.value === "" ? undefined : e.target.value)
+                                }
+                                displayEmpty
+                            >
+                                <MenuItem value="unpaid">Unpaid</MenuItem>
+                                <MenuItem value="pending">Pending</MenuItem>
+                                <MenuItem value="completed">Completed</MenuItem>
+                                <MenuItem value="failed">Failed</MenuItem>
+                            </Select>
+                            <button
+                                onClick={() => setUpdateStatus(undefined)}
+                                className="text-gray-500 hover:text-black font-semibold text-lg px-2"
+                                aria-label="Clear"
+                            >
+                                ×
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Payment Method */}
+                    <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Payment Method:</label>
+                        <div className="flex items-center gap-2">
+                            <Select
+                                fullWidth
+                                value={updateMethod ?? ""}
+                                onChange={(e) =>
+                                    setUpdateMethod(e.target.value === "" ? undefined : e.target.value)
+                                }
+                                displayEmpty
+                            >
+                                <MenuItem value="Card">Card</MenuItem>
+                                <MenuItem value="Bank">Bank</MenuItem>
+                                <MenuItem value="ThaiQR">ThaiQR</MenuItem>
+                            </Select>
+                            <button
+                                onClick={() => setUpdateMethod(undefined)}
+                                className="text-gray-500 hover:text-black font-semibold text-lg px-2"
+                                aria-label="Clear"
+                            >
+                                ×
+                            </button>
+                        </div>
+                    </div>
                 </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setUpdateOpen(false)} color="secondary">Cancel</Button>
-                    <Button onClick={() => handleUpdate( (role === "admin" ? updateStatus : "unpaid"), updateMethod)} color="primary">Update</Button>
+                <DialogActions className="px-6 pb-4">
+                    <Button onClick={() => setUpdateOpen(false)} color="secondary" className="mr-2">
+                        Cancel
+                    </Button>
+                    <Button
+                        onClick={() => handleUpdate(updateStatus, updateMethod, updateAmount)}
+                        color="primary"
+                        variant="contained"
+                    >
+                        Update
+                    </Button>
                 </DialogActions>
             </Dialog>
 

@@ -21,11 +21,10 @@ export default function Card ( { roomItem } : { roomItem:RoomItem } ) {
                 className='object-cover rounded-t-lg'
                 />
             </div> }
-            <div className='w-full h-[100px] text-center text-black bg-white rounded-b-lg p-3'>
-                <h3>Room No.{roomItem.number}</h3>
-                
-                <h3>{roomItem.type} room</h3>
-                <h3>{roomItem.price} baht</h3>
+            <div className='w-full h-[100px] text-center text-black bg-white rounded-b-lg p-3 shadow-md'>
+                <div className='font-bold'>Number {roomItem.number}</div>
+                <div>{roomItem.type}</div>
+                <div className='font-bold'>${roomItem.price}</div>
             </div>
         </InteractiveCard>
     );

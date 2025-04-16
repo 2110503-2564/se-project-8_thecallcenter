@@ -4,9 +4,18 @@ interface BookingItem {
   checkOutDate: string,
   room: RoomItem,
   hotel: HotelItem,
+  payments: PaymentItem[],
   user: UserItem,
   status: string,
+
+  payments: PaymentItem[];
 }
+
+interface PaymentCurrencyAmount {
+  amount: number;  
+  currency: string;
+}
+
   
 interface BookingJson {
   success: boolean,
@@ -112,8 +121,8 @@ interface PaymentJson {
 
 interface PaymentItem2 {
   _id: string;
-  booking: string; 
-  user: string; 
+  booking: BookingItemforPayment; 
+  user: UserItem; 
   // @ts-ignore
   amount: number;
   status: string;
@@ -128,5 +137,14 @@ interface PaymentItemPopulate {
   amount: number;
   status: string;
   paymentDate?: Date;
+}
+
+interface BookingItemforPayment {
+  _id: string,
+  checkInDate: string,
+  checkOutDate: string,
+  room: RoomItem,
+  hotel: HotelItem, 
+  user: UserItem
 }
 

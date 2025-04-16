@@ -35,7 +35,7 @@ export default function DateReserve({
   };
 
   return (
-    <div className="flex flex-row items-center w-full justify-center space-x-4 bg-[#f1f5f9] p-4 rounded-xl">
+    <div className="flex flex-row items-center w-full justify-center space-x-4 bg-slate-50 p-4 rounded-xl shadow-sm">
       {/* Check-in Date */}
       <div className="flex flex-col w-1/2">
         <label className="text-sm text-black mb-1">Check-In Date:</label>

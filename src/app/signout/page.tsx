@@ -15,7 +15,7 @@ export default function LogoutConfirmationPage() {
   };
 
   return (
-    <div className="flex items-center justify-center text-black">
+    <div className="flex items-center justify-center text-black h-[80vh]">
       <div className="bg-white p-6 rounded-2xl shadow-lg w-[400px] mt-20 relative p-10">
         <button
           onClick={handleNo}
