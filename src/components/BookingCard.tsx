@@ -29,21 +29,21 @@ export default function BookingCard({
     const [loading, setLoading] = useState(true);
     const [userProfile, setUserProfile] = useState<UserItem | null>(null);
 
-    useEffect(() => {
-        async function fetchData() {
-            if (!session?.user?.token) return;
+    // useEffect(() => {
+    //     async function fetchData() {
+    //         if (!session?.user?.token) return;
 
-            const profile = await getUserProfile(session.user.token);
-            setUserProfile(profile.data);
+    //         const profile = await getUserProfile(session.user.token);
+    //         setUserProfile(profile.data);
 
-            const paymentJson: PaymentJson = await getPayments(session.user.token);
-            setPayments(paymentJson.data);
+    //         const paymentJson: PaymentJson = await getPayments(session.user.token);
+    //         setPayments(paymentJson.data);
 
-            setLoading(false);
-        }
+    //         setLoading(false);
+    //     }
 
-        fetchData();
-    }, [session]);
+    //     fetchData();
+    // }, [session]);
 
     const handleRefund = async () => {
         const refund = await refundCalculation(bookingData, token)
