@@ -20,7 +20,7 @@ export default function BookingCard({
     onRefundClick: (booking: BookingItem) => void;
     onDeleteClick: (booking: BookingItem) => void;
 }) {
-    const [payments, setPayments] = useState<PaymentItem[]>(bookingData.payments || []);
+
     const [payments, setPayments] = useState<PaymentItem[]>(bookingData.payments || []);
     const [loading, setLoading] = useState(true);
     const [userProfile, setUserProfile] = useState<UserItem | null>(null);
